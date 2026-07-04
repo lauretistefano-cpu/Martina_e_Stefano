@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Martina & Stefano — 10 Ottobre 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sabbia:      #F4ECDB; /* sabbia del Salento */
+    --maiolica:    #1E5B66; /* blu maiolica pugliese */
+    --maiolica-d:  #143E47; /* maiolica scuro */
+    --terracotta:  #C2502A; /* terracotta / coppi */
+    --terracotta-d:#A1421F;
+    --fico:        #5B7A4F; /* verde pala di fico d'India */
+    --fico-frutto: #C9492F; /* frutto del fico d'India */
+    --oro:         #BF9A4A; /* oro vecchio */
+    --inchiostro:  #2C2A22;
+    --carta:       #FBF6EC;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    font-family:'Nunito', sans-serif;
+    background-color:var(--sabbia);
+    color:var(--inchiostro);
+    line-height:1.7;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+  }
+
+  /* ---------- sfondo: pale di fico d'India realistiche, fisse e in trasparenza ---------- */
+  .cactus-bg{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .cactus-bg svg{ position:absolute; }
+  .cactus-bg .c1{ top:-50px; left:-80px; width:280px; transform:rotate(-10deg); }
+  .cactus-bg .c2{ bottom:-70px; right:-90px; width:320px; transform:scaleX(-1) rotate(8deg); }
+  .cactus-bg .c3{ top:36%; right:-65px; width:190px; opacity:.65; }
+  .cactus-bg .c4{ bottom:16%; left:-55px; width:170px; opacity:.6; transform:scaleX(-1); }
+
+  /* ---------- busta ---------- */
+  #envelope-container{
+    width:100%; max-width:460px; height:100vh;
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    padding:24px;
+    position:fixed; top:0; left:50%; transform:translateX(-50%);
+    background-color:var(--sabbia);
+    z-index:10;
+    transition:opacity .9s ease, transform .9s ease;
+  }
+  .invito-eyebrow{
+    font-family:'Nunito',sans-serif; font-size:.72rem; letter-spacing:4px;
+    color:var(--maiolica); text-transform:uppercase; margin-bottom:18px; opacity:.85;
+  }
+  .invito-nomi{
+    font-family:'Quicksand', sans-serif; font-weight:600;
+    font-size:2.1rem; color:var(--maiolica-d);
+    margin-bottom:46px; text-align:center;
+  }
+  .envelope{
+    width:100%; max-width:340px; height:230px;
+    background-color:var(--maiolica-d);
+    border-radius:3px 3px 14px 14px;
+    position:relative; cursor:pointer;
+    box-shadow:0 18px 45px rgba(20,62,71,.25);
+  }
+  .envelope::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(135deg, rgba(255,255,255,.06) 0%, transparent 45%),
+      linear-gradient(45deg, transparent 50%, rgba(0,0,0,.12) 50%);
+    border-radius:inherit;
+  }
+  .seal{
+    position:absolute; top:46%; left:50%; transform:translate(-50%,-50%);
+    width:72px; height:72px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #D9683F, var(--terracotta-d));
+    display:flex; justify-content:center; align-items:center;
+    box-shadow:0 6px 18px rgba(0,0,0,.25);
+    animation:pulse 2.6s infinite;
+    z-index:5;
+  }
+  .seal svg{ width:30px; height:30px; }
+  @keyframes pulse{
+    0%,100%{ transform:translate(-50%,-50%) scale(1); }
+    50%{ transform:translate(-50%,-50%) scale(1.06); }
+  }
+  .envelope-text{
+    position:absolute; bottom:22px; width:100%; text-align:center;
+    color:var(--sabbia); font-weight:500; font-size:.82rem;
+    letter-spacing:3px; opacity:.85; text-transform:uppercase;
+  }
+
+  /* ---------- contenuto ---------- */
+  #main-content{
+    width:100%; max-width:520px; padding:0;
+    opacity:0; display:none;
+    transition:opacity 1s ease;
+    margin:0 auto; position:relative; z-index:1;
+  }
+
+  .cover{
+    width:100%; height:52vh; min-height:340px;
+    position:relative;
+    overflow:hidden;
+  }
+  .carousel{
+    width:100%; height:100%;
+    display:flex;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .carousel::-webkit-scrollbar{ display:none; }
+  .carousel .slide{
+    flex:0 0 100%;
+    scroll-snap-align:center;
+    position:relative;
+  }
+  .carousel .slide img{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .cover::after{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(20,62,71,0.06) 0%, rgba(20,62,71,0) 35%, var(--sabbia) 100%);
+    pointer-events:none;
+  }
+  .cover-dots{
+    position:absolute; bottom:18px; left:0; right:0;
+    display:flex; justify-content:center; gap:7px;
+    z-index:2;
+  }
+  .cover-dots span{
+    width:7px; height:7px; border-radius:50%;
+    background:rgba(255,255,255,.55);
+    transition:background .25s, transform .25s;
+  }
+  .cover-dots span.attiva{
+    background:#fff;
+    transform:scale(1.25);
+  }
+  .cover .ramo{
+    position:absolute; bottom:-10px; opacity:.5;
+  }
+  .cover .ramo.left{ left:-30px; width:170px; }
+  .cover .ramo.right{ right:-30px; width:170px; transform:scaleX(-1); }
+
+  .container{ padding:8px 22px 0; }
+
+  .main-title{ text-align:center; padding:8px 0 30px; }
+  .main-title .data-piccola{
+    font-size:.72rem; letter-spacing:4px; color:var(--terracotta);
+    font-weight:600; text-transform:uppercase; margin-bottom:10px;
+  }
+  .main-title h1{
+    font-family:'Quicksand', sans-serif; font-weight:700;
+    font-size:2.7rem; color:var(--maiolica-d); margin-bottom:8px;
+    letter-spacing:.5px;
+  }
+  .main-title .sottotitolo{
+    font-family:'Nunito', sans-serif; font-weight:500;
+    font-size:1.05rem; color:var(--inchiostro); opacity:.7;
+  }
+
+  .divider{
+    display:flex; align-items:center; justify-content:center;
+    gap:14px; margin:0 0 30px;
+  }
+  .divider .linea{ height:1px; width:42px; background:var(--oro); opacity:.6; }
+  .divider svg{ width:36px; height:36px; }
+
+  section{
+    background-color:var(--carta);
+    border-radius:14px;
+    padding:32px 24px;
+    margin-bottom:22px;
+    box-shadow:0 6px 24px rgba(20,62,71,.06);
+    text-align:center;
+    border:1px solid #EDE3CF;
+    position:relative;
+  }
+
+  h2{
+    font-family:'Quicksand', sans-serif; font-weight:600;
+    color:var(--maiolica-d); font-size:1.5rem;
+    margin-bottom:18px; letter-spacing:.3px;
+  }
+
+  .luogo-nome{ font-weight:600; font-size:1.25rem; color:var(--maiolica-d); }
+  .luogo-citta{ color:var(--inchiostro); opacity:.6; margin-top:2px; }
+  .luogo-data{
+    margin-top:12px; color:var(--terracotta); font-weight:600;
+    letter-spacing:1px; font-size:.92rem; text-transform:uppercase;
+  }
+
+  .rsvp-testo{ color:var(--inchiostro); opacity:.75; }
+  .rsvp-testo strong{ color:var(--maiolica-d); opacity:1; }
+
+  .btn{
+    display:block; color:#fff; text-decoration:none;
+    padding:16px 20px; border-radius:6px; font-weight:600;
+    font-size:.92rem; letter-spacing:1.5px; text-transform:uppercase;
+    margin:22px 0 4px; transition:background-color .2s, transform .2s;
+  }
+  .btn:active{ transform:scale(.98); }
+  .btn-maps{ background-color:var(--maiolica-d); }
+  .btn-maps:hover{ background-color:#0F2F36; }
+  .btn-rsvp{ background-color:var(--terracotta); }
+  .btn-rsvp:hover{ background-color:var(--terracotta-d); }
+
+  .iban-box{
+    background-color:var(--sabbia);
+    padding:16px 18px; border-radius:8px;
+    font-family:'Nunito', sans-serif; font-size:.92rem;
+    word-break:break-all; margin-top:16px;
+    border:1px dashed #D8C9A3; color:var(--maiolica-d);
+    letter-spacing:.5px;
+  }
+  .iban-box strong{ color:var(--terracotta); display:block; margin-bottom:4px; font-size:.72rem; letter-spacing:2px; text-transform:uppercase; }
+
+  footer{
+    text-align:center; padding:36px 20px 50px;
+    color:var(--maiolica-d); opacity:.45;
+    font-size:.78rem; letter-spacing:2px; text-transform:uppercase;
+    font-family:'Nunito', sans-serif;
+  }
+</style>
+</head>
+<body>
+
+  <!-- pale di fico d'India in trasparenza, fisse sullo sfondo — su riferimento fotografico reale -->
+  <div class="cactus-bg" aria-hidden="true">
+
+    <svg width="0" height="0" style="position:absolute">
+      <defs>
+        <linearGradient id="figGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#E2B25C"/>
+          <stop offset="55%" stop-color="#E08A2E"/>
+          <stop offset="100%" stop-color="#C9492F"/>
+        </linearGradient>
+
+        <symbol id="spina" viewBox="-6 -6 12 12">
+          <path d="M0 0 L-4 -3 M0 0 L4 -3 M0 0 L0 5" stroke="var(--pad-edge,#44603A)" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.6"/>
+        </symbol>
+
+        <symbol id="pad" viewBox="0 0 120 160">
+          <path d="M60 6 C92 6 104 36 100 64 C98 84 92 100 80 116 C70 130 66 140 60 152 C54 140 50 130 40 116 C28 100 22 84 20 64 C16 36 28 6 60 6 Z" fill="var(--pad-fill,#5B8A4D)" fill-opacity="0.4" stroke="var(--pad-edge,#3C5A33)" stroke-opacity="0.5" stroke-width="1.7" stroke-linejoin="round"/>
+          <use href="#spina" x="39" y="34" width="12" height="12"/>
+          <use href="#spina" x="61" y="32" width="12" height="12"/>
+          <use href="#spina" x="78" y="50" width="12" height="12"/>
+          <use href="#spina" x="32" y="56" width="12" height="12"/>
+          <use href="#spina" x="55" y="58" width="12" height="12"/>
+          <use href="#spina" x="74" y="74" width="12" height="12"/>
+          <use href="#spina" x="38" y="82" width="12" height="12"/>
+          <use href="#spina" x="58" y="86" width="12" height="12"/>
+          <use href="#spina" x="76" y="98" width="12" height="12"/>
+          <use href="#spina" x="44" y="106" width="12" height="12"/>
+          <use href="#spina" x="64" y="111" width="12" height="12"/>
+          <use href="#spina" x="55" y="126" width="12" height="12"/>
+        </symbol>
+
+        <symbol id="frutto" viewBox="0 0 34 44">
+          <ellipse cx="17" cy="27" rx="12" ry="15.5" fill="url(#figGrad)" opacity="0.82" stroke="var(--pad-edge,#3C5A33)" stroke-opacity="0.3" stroke-width="1"/>
+          <path d="M6 13 L9 6 L12.5 12 L17 5 L21.5 12 L25 6 L28 13" fill="none" stroke="var(--pad-edge,#3C5A33)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+          <g fill="var(--pad-edge,#3C5A33)" opacity="0.4">
+            <circle cx="12" cy="24" r="1"/>
+            <circle cx="23" cy="22" r="1"/>
+            <circle cx="17" cy="34" r="1"/>
+          </g>
+        </symbol>
+
+        <!-- rosone salentino: medaglione ispirato alle luminarie -->
+        <symbol id="rosone-raggio" viewBox="0 0 100 100">
+          <line x1="50" y1="50" x2="50" y2="13" stroke="currentColor" stroke-width="1" opacity="0.55"/>
+          <circle cx="50" cy="9" r="2.1" fill="currentColor" opacity="0.85"/>
+        </symbol>
+        <symbol id="rosone" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.4"/>
+          <circle cx="50" cy="50" r="27" fill="none" stroke="currentColor" stroke-width="1" opacity="0.35"/>
+          <use href="#rosone-raggio" transform="rotate(0 50 50)"/>
+          <use href="#rosone-raggio" transform="rotate(30 50 50)"/>
+          <use href="#rosone-raggio" transform="rotate(60 50 50)"/>
+          <use href="#rosone-raggio" transform="rotate(90 50 50)"/>
+          <use href="#rosone-raggio" transform="rotate(120 50 50)"/>
+          <use href="#rosone-raggio" transform="rotate(150 50 50)"/>
+          <use href="#rosone-raggio" transform="rotate(180 50 50)"/>
+          <use href="#rosone-raggio" transform="rotate(210 50 50)"/>
+          <use href="#rosone-raggio" transform="rotate(240 50 50)"/>
+          <use href="#rosone-raggio" transform="rotate(270 50 50)"/>
+          <use href="#rosone-raggio" transform="rotate(300 50 50)"/>
+          <use href="#rosone-raggio" transform="rotate(330 50 50)"/>
+          <g opacity="0.5">
+            <ellipse cx="50" cy="38" rx="3" ry="7" fill="currentColor" transform="rotate(0 50 50)"/>
+            <ellipse cx="50" cy="38" rx="3" ry="7" fill="currentColor" transform="rotate(60 50 50)"/>
+            <ellipse cx="50" cy="38" rx="3" ry="7" fill="currentColor" transform="rotate(120 50 50)"/>
+            <ellipse cx="50" cy="38" rx="3" ry="7" fill="currentColor" transform="rotate(180 50 50)"/>
+            <ellipse cx="50" cy="38" rx="3" ry="7" fill="currentColor" transform="rotate(240 50 50)"/>
+            <ellipse cx="50" cy="38" rx="3" ry="7" fill="currentColor" transform="rotate(300 50 50)"/>
+          </g>
+          <circle cx="50" cy="50" r="4.5" fill="currentColor" opacity="0.9"/>
+        </symbol>
+      </defs>
+    </svg>
+
+    <svg class="c1" viewBox="0 0 230 230" xmlns="http://www.w3.org/2000/svg" style="--pad-fill:#5B8A4D; --pad-edge:#3C5A33;">
+      <use href="#pad" x="40" y="86" width="120" height="140" transform="rotate(2 100 156)"/>
+      <use href="#pad" x="100" y="40" width="100" height="116" transform="rotate(46 150 98)"/>
+      <use href="#pad" x="-10" y="36" width="92" height="108" transform="rotate(-42 36 90)"/>
+      <use href="#frutto" x="158" y="28" width="20" height="26" transform="rotate(20 168 41)"/>
+      <use href="#frutto" x="12" y="18" width="18" height="23" transform="rotate(-18 21 30)"/>
+    </svg>
+
+    <svg class="c2" viewBox="0 0 230 230" xmlns="http://www.w3.org/2000/svg" style="--pad-fill:#6B9A5A; --pad-edge:#3C5A33;">
+      <use href="#pad" x="40" y="86" width="120" height="140" transform="rotate(2 100 156)"/>
+      <use href="#pad" x="100" y="40" width="100" height="116" transform="rotate(46 150 98)"/>
+      <use href="#pad" x="-10" y="36" width="92" height="108" transform="rotate(-42 36 90)"/>
+      <use href="#frutto" x="158" y="28" width="20" height="26" transform="rotate(20 168 41)"/>
+      <use href="#frutto" x="12" y="18" width="18" height="23" transform="rotate(-18 21 30)"/>
+    </svg>
+
+    <svg class="c3" viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg" style="--pad-fill:#5B8A4D; --pad-edge:#3C5A33;">
+      <use href="#pad" x="28" y="58" width="98" height="114" transform="rotate(4 77 115)"/>
+      <use href="#pad" x="74" y="22" width="80" height="94" transform="rotate(44 114 69)"/>
+      <use href="#frutto" x="118" y="12" width="16" height="20" transform="rotate(16 126 22)"/>
+    </svg>
+
+    <svg class="c4" viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg" style="--pad-fill:#6B9A5A; --pad-edge:#3C5A33;">
+      <use href="#pad" x="28" y="58" width="98" height="114" transform="rotate(4 77 115)"/>
+      <use href="#pad" x="74" y="22" width="80" height="94" transform="rotate(44 114 69)"/>
+      <use href="#frutto" x="118" y="12" width="16" height="20" transform="rotate(16 126 22)"/>
+    </svg>
+
+  </div>
+
+  <!-- ---------- busta ---------- -->
+  <div id="envelope-container" onclick="openEnvelope()">
+    <p class="invito-eyebrow">Vi invitiamo al nostro matrimonio</p>
+    <p class="invito-nomi">Martina &amp; Stefano</p>
+    <div class="envelope">
+      <div class="seal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#FBF6EC" stroke-width="1.6">
+          <path d="M3 6h18v12H3z" stroke-linejoin="round"/>
+          <path d="M3 6l9 7 9-7" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="envelope-text">Apri l'invito</div>
+    </div>
+  </div>
+
+  <!-- ---------- contenuto ---------- -->
+  <div id="main-content">
+    <div class="cover">
+      <div class="carousel" id="carousel">
+        <div class="slide"><img src="foto/foto1.jpg" alt="Martina e Stefano" loading="lazy"></div>
+        <div class="slide"><img src="foto/foto2.jpg" alt="Martina e Stefano" loading="lazy"></div>
+        <div class="slide"><img src="foto/foto3.jpg" alt="Martina e Stefano" loading="lazy"></div>
+        <div class="slide"><img src="foto/foto4.jpg" alt="Martina e Stefano" loading="lazy"></div>
+        <div class="slide"><img src="foto/foto5.jpg" alt="Martina e Stefano" loading="lazy"></div>
+        <div class="slide"><img src="foto/foto6.jpg" alt="Martina e Stefano" loading="lazy"></div>
+        <div class="slide"><img src="foto/foto7.jpg" alt="Martina e Stefano" loading="lazy"></div>
+      </div>
+      <div class="cover-dots" id="coverDots">
+        <span class="attiva"></span><span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <svg class="ramo left" viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#FBF6EC" stroke-width="2" opacity="0.6">
+          <path d="M10 125 C30 110 35 90 50 78 C60 70 70 70 78 58 C70 50 55 50 48 36 C42 24 50 12 64 16 C74 19 76 32 80 42" stroke-linecap="round"/>
+          <circle cx="56" cy="34" r="2" fill="#FBF6EC"/>
+          <circle cx="70" cy="60" r="2" fill="#FBF6EC"/>
+        </g>
+      </svg>
+      <svg class="ramo right" viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#FBF6EC" stroke-width="2" opacity="0.6">
+          <path d="M10 125 C30 110 35 90 50 78 C60 70 70 70 78 58 C70 50 55 50 48 36 C42 24 50 12 64 16 C74 19 76 32 80 42" stroke-linecap="round"/>
+          <circle cx="56" cy="34" r="2" fill="#FBF6EC"/>
+          <circle cx="70" cy="60" r="2" fill="#FBF6EC"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="container">
+
+      <svg viewBox="0 0 100 100" width="86" height="86" style="display:block; margin:0 auto 6px; color:var(--oro);" aria-hidden="true"><use href="#rosone"/></svg>
+
+      <div class="main-title">
+        <p class="data-piccola">10 Ottobre 2026</p>
+        <h1>Martina &amp; Stefano</h1>
+        <p class="sottotitolo">si sposano in Salento</p>
+      </div>
+
+      <div class="divider">
+        <span class="linea"></span>
+        <svg viewBox="0 0 100 100" width="36" height="36" style="color:var(--oro); opacity:.85;" aria-hidden="true"><use href="#rosone"/></svg>
+        <span class="linea"></span>
+      </div>
+
+      <section>
+        <h2>Il Pranzo di Nozze</h2>
+        <p class="luogo-nome">Masseria Fulcignano</p>
+        <p class="luogo-citta">Galatone (Lecce) — Puglia</p>
+        <p class="luogo-data">Sabato 10 Ottobre · ore 12:00</p>
+        <a href="https://maps.google.com/?q=Masseria+Fulcignano+Galatone" target="_blank" class="btn btn-maps">Apri il navigatore</a>
+      </section>
+
+      <section>
+        <h2>Ci sarete?</h2>
+        <p class="rsvp-testo">È un momento speciale e vorremmo davvero avervi al nostro fianco. Vi chiediamo la cortesia di darci conferma entro il <strong>31 Agosto 2026</strong>.</p>
+        <a href="https://forms.google.com" target="_blank" class="btn btn-rsvp">Conferma il tuo posto</a>
+      </section>
+
+      <section>
+        <h2>Un Pensiero per Noi</h2>
+        <p class="rsvp-testo">Il regalo più grande sarà festeggiare insieme. Se desiderate contribuire alla nostra nuova vita o al nostro viaggio di nozze, potete farlo qui:</p>
+        <div class="iban-box">
+          <strong>IBAN</strong>
+          IT 12 X 01234 12345 000000123456
+        </div>
+        <p style="font-size:.78rem; color:var(--inchiostro); opacity:.45; margin-top:10px;">Causale: Regalo Matrimonio Martina e Stefano</p>
+      </section>
+
+      <footer>Martina &amp; Stefano · Galatone, 2026</footer>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var carousel = document.getElementById('carousel');
+      var dots = document.querySelectorAll('#coverDots span');
+      var slideCount = carousel.children.length;
+      var current = 0;
+      var autoTimer;
+
+      function goTo(index) {
+        current = (index + slideCount) % slideCount;
+        carousel.scrollTo({ left: carousel.clientWidth * current, behavior: 'smooth' });
+      }
+
+      function updateDots() {
+        var index = Math.round(carousel.scrollLeft / carousel.clientWidth);
+        dots.forEach(function (dot, i) {
+          dot.classList.toggle('attiva', i === index);
+        });
+        current = index;
+      }
+
+      carousel.addEventListener('scroll', function () {
+        clearTimeout(carousel._scrollTimeout);
+        carousel._scrollTimeout = setTimeout(updateDots, 80);
+      });
+
+      function startAuto() {
+        autoTimer = setInterval(function () { goTo(current + 1); }, 4200);
+      }
+      function stopAuto() {
+        clearInterval(autoTimer);
+      }
+
+      carousel.addEventListener('touchstart', stopAuto, { passive: true });
+      carousel.addEventListener('mousedown', stopAuto);
+
+      startAuto();
+    })();
+  </script>
+
+  <script>
+    function openEnvelope() {
+      var env = document.getElementById('envelope-container');
+      var content = document.getElementById('main-content');
+      env.style.opacity = '0';
+      env.style.transform = 'translate(-50%, -100vh)';
+      setTimeout(function () {
+        env.style.display = 'none';
+        content.style.display = 'block';
+        setTimeout(function () { content.style.opacity = '1'; }, 50);
+      }, 800);
+    }
+  </script>
+
+</body>
+</html>
